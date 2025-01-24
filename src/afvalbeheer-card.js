@@ -18,7 +18,7 @@ class AfvalbeheerCard extends LitElement {
     const afvalSensor = Object.keys(this.hass.states).find(
       (entity) =>
         entity.includes("afval_kalender_") &&
-        this.hass.states[entity].attributes.integration === "afvalbeheer"
+        this.hass.states[entity].attributes.Wastecollector
     );
 
     if (!afvalSensor) return "";
