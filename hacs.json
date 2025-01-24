@@ -1,7 +1,6 @@
 {
   "name": "Afvalbeheer Card",
-  "content_in_root": true,
-  "filename": "afvalbeheer-card.js",
   "render_readme": true,
-  "hide_default_branch": true
+  "filename": "afvalbeheer-card.js",
+  "content_in_root": false
 }
