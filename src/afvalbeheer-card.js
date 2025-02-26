@@ -64,7 +64,9 @@ class AfvalbeheerCard extends LitElement {
       .waste-item-info h3 {
         margin: 0;
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.87);
+        text-transform: capitalize;
       }
       .waste-item-info p {
         margin: 4px 0 0;
@@ -76,8 +78,9 @@ class AfvalbeheerCard extends LitElement {
         text-align: right;
       }
       .waste-item-days span {
-        font-size: 18px;
+        font-size: 22px;
         font-weight: bold;
+        color: rgba(0, 0, 0, 0.87);
       }
       .waste-item-days p {
         margin: 0;
@@ -93,6 +96,11 @@ class AfvalbeheerCard extends LitElement {
         display: flex;
         align-items: center;
         margin-top: 8px;
+        color: rgba(0, 0, 0, 0.8);
+        font-weight: 500;
+        padding: 8px;
+        background-color: rgba(240, 240, 240, 0.6);
+        border-radius: 4px;
       }
       .today-tomorrow svg {
         width: 16px;
@@ -104,16 +112,20 @@ class AfvalbeheerCard extends LitElement {
         font-weight: 500;
       }
       .restafval {
-        background-color: var(--light-primary-color, rgba(173, 216, 230, 0.7));
+        background-color: rgba(240, 240, 240, 0.8);
+        border-left: 4px solid #555;
       }
       .gft {
-        background-color: var(--light-green-color, rgba(144, 238, 144, 0.7));
+        background-color: rgba(200, 240, 200, 0.8);
+        border-left: 4px solid #4caf50;
       }
       .papier {
-        background-color: var(--light-blue-color, rgba(135, 206, 250, 0.7));
+        background-color: rgba(200, 230, 255, 0.8);
+        border-left: 4px solid #2196f3;
       }
       .pmd {
-        background-color: var(--light-yellow-color, rgba(255, 255, 224, 0.7));
+        background-color: rgba(255, 235, 195, 0.8);
+        border-left: 4px solid #ff9800;
       }
     `;
   }
@@ -276,14 +288,15 @@ class AfvalbeheerCard extends LitElement {
       {
         id: "restafval",
         sensor: entityMap.restafval,
-        icon: html`<svg
+        icon: html` <svg
           viewBox="0 0 24 24"
           width="24"
           height="24"
           fill="currentColor"
+          style="color: #555;"
         >
           <path
-            d="M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6Z"
+            d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
           />
         </svg>`,
         class: "restafval",
@@ -291,27 +304,31 @@ class AfvalbeheerCard extends LitElement {
       {
         id: "gft",
         sensor: entityMap.gft,
-        icon: html`<svg
+        icon: html` <svg
           viewBox="0 0 24 24"
           width="24"
           height="24"
           fill="currentColor"
+          style="color: #4CAF50;"
         >
-          <path d="M17 8H7C5.9 8 5 8.9 5 10V19H19V10C19 8.9 18.1 8 17 8Z" />
+          <path
+            d="M2.5,19H21.5V21H2.5V19M22,3H2V8H9.5V10H14.5V8H22V3M4,5H20V6H4V5M11,11H13V14H11V11M7,11H9V14H7V11M15,11H17V14H15V11M7,15H9V18H7V15M11,15H13V18H11V15M15,15H17V18H15V15Z"
+          />
         </svg>`,
         class: "gft",
       },
       {
         id: "papier",
         sensor: entityMap.papier,
-        icon: html`<svg
+        icon: html` <svg
           viewBox="0 0 24 24"
           width="24"
           height="24"
           fill="currentColor"
+          style="color: #2196F3;"
         >
           <path
-            d="M14,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8L14,2z M16,18H8v-2h8V18z M16,14H8v-2h8V14z M13,9V3.5 L18.5,9H13z"
+            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M10,13H8V11H10V13M10,17H8V15H10V17M14,13H12V11H14V13M14,17H12V15H14V17Z"
           />
         </svg>`,
         class: "papier",
@@ -319,14 +336,15 @@ class AfvalbeheerCard extends LitElement {
       {
         id: "pmd",
         sensor: entityMap.pmd,
-        icon: html`<svg
+        icon: html` <svg
           viewBox="0 0 24 24"
           width="24"
           height="24"
           fill="currentColor"
+          style="color: #FF9800;"
         >
           <path
-            d="M19,3H5C3.89,3,3,3.89,3,5v14c0,1.11,0.89,2,2,2h14c1.11,0,2-0.89,2-2V5C21,3.89,20.11,3,19,3z M19,19H5V5h14V19z"
+            d="M12,18A1,1 0 0,1 11,17A1,1 0 0,1 12,16A1,1 0 0,1 13,17A1,1 0 0,1 12,18M12,16A1,1 0 0,1 11,15A1,1 0 0,1 12,14A1,1 0 0,1 13,15A1,1 0 0,1 12,16M12,14A1,1 0 0,1 11,13A1,1 0 0,1 12,12A1,1 0 0,1 13,13A1,1 0 0,1 12,14M19,5V19H5V5H19M21,3H3A2,2 0 0,0 1,5V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V5A2,2 0 0,0 21,3Z"
           />
         </svg>`,
         class: "pmd",
@@ -338,7 +356,7 @@ class AfvalbeheerCard extends LitElement {
         <div class="card-header">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
             <path
-              d="M19.5 4L18 2H6L4.5 4H0V6H24V4H19.5ZM6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19Z"
+              d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
             />
           </svg>
           <h2>Afvalkalender</h2>
@@ -367,17 +385,29 @@ class AfvalbeheerCard extends LitElement {
 
         <div class="today-tomorrow">
           <div>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="currentColor"
+              style="margin-right: 8px; color: #555;"
+            >
               <path
-                d="M19,4H18V2H16V4H8V2H6V4H5C3.89,4,3,4.9,3,6V20C3,21.1,3.89,22,5,22H19C20.1,22,21,21.1,21,20V6C21,4.9,20.1,4,19,4ZM19,20H5V10H19V20ZM19,8H5V6H19V8Z"
+                d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z"
               />
             </svg>
             <span>Vandaag: ${this._getSensorValue(entityMap.vandaag)}</span>
           </div>
           <div>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="currentColor"
+              style="margin-right: 8px; color: #555;"
+            >
               <path
-                d="M13,13H11V7H13M13,17H11V15H13M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2Z"
+                d="M13,9H11V12H8V14H11V17H13V14H16V12H13M19,3H18V1H16V3H8V1H6V3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V8H19V19Z"
               />
             </svg>
             <span>Morgen: ${this._getSensorValue(entityMap.morgen)}</span>
