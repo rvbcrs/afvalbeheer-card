@@ -119,11 +119,16 @@ class AfvalbeheerCard extends LitElement {
   }
 
   _getSensorValue(entityId) {
+    console.log("Opvragen sensor:", entityId);
     const state = this.hass.states[entityId];
-    if (!state) return "Onbekend";
+    console.log("Sensor state:", state);
 
-    // Debug
-    console.log(`Sensor ${entityId} value: `, state.state);
+    if (!state) {
+      console.log("Sensor niet gevonden!");
+      return "Onbekend";
+    }
+
+    console.log(`Sensor ${entityId} waarde:`, state.state);
     return state.state;
   }
 
@@ -133,22 +138,37 @@ class AfvalbeheerCard extends LitElement {
 
     console.log("Formatting date: ", dateStr);
 
-    // Afvalbeheer specifieke formaten verwerken
-    // Format: "03-03-2025: GFT" of "Maandag, 24-03-2025"
+    // Pure datum in formaat "10-03-2025"
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+      const parts = dateStr.split("-");
+      const date = new Date(parts[2], parts[1] - 1, parts[0]);
+
+      // Controleer of de datum geldig is
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString("nl-NL", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        });
+      }
+    }
+
+    // Formaat "03-03-2025: GFT" of "Maandag, 24-03-2025"
+    let cleanDateStr = dateStr;
 
     // Verwijder afvaltype uit de datum (als dat erin zit)
-    if (dateStr.includes(":")) {
-      dateStr = dateStr.split(":")[0].trim();
+    if (cleanDateStr.includes(":")) {
+      cleanDateStr = cleanDateStr.split(":")[0].trim();
     }
 
     // Verwijder dag van de week (als die erin zit)
-    if (dateStr.includes(",")) {
-      dateStr = dateStr.split(",")[1].trim();
+    if (cleanDateStr.includes(",")) {
+      cleanDateStr = cleanDateStr.split(",")[1].trim();
     }
 
     // Nu hebben we alleen de datum in DD-MM-YYYY formaat
-    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-      const parts = dateStr.split("-");
+    if (/^\d{2}-\d{2}-\d{4}$/.test(cleanDateStr)) {
+      const parts = cleanDateStr.split("-");
       const date = new Date(parts[2], parts[1] - 1, parts[0]);
 
       // Controleer of de datum geldig is
@@ -170,21 +190,38 @@ class AfvalbeheerCard extends LitElement {
 
     console.log("Calculating days for: ", dateStr);
 
+    // Pure datum in formaat "10-03-2025"
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+      const parts = dateStr.split("-");
+      const date = new Date(parts[2], parts[1] - 1, parts[0]);
+
+      // Controleer of de datum geldig is
+      if (!isNaN(date.getTime())) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const diffTime = date - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 ? diffDays : "?";
+      }
+    }
+
     // Afvalbeheer specifieke formaten verwerken
+    let cleanDateStr = dateStr;
 
     // Verwijder afvaltype uit de datum (als dat erin zit)
-    if (dateStr.includes(":")) {
-      dateStr = dateStr.split(":")[0].trim();
+    if (cleanDateStr.includes(":")) {
+      cleanDateStr = cleanDateStr.split(":")[0].trim();
     }
 
     // Verwijder dag van de week (als die erin zit)
-    if (dateStr.includes(",")) {
-      dateStr = dateStr.split(",")[1].trim();
+    if (cleanDateStr.includes(",")) {
+      cleanDateStr = cleanDateStr.split(",")[1].trim();
     }
 
     // Nu hebben we alleen de datum in DD-MM-YYYY formaat
-    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-      const parts = dateStr.split("-");
+    if (/^\d{2}-\d{2}-\d{4}$/.test(cleanDateStr)) {
+      const parts = cleanDateStr.split("-");
       const date = new Date(parts[2], parts[1] - 1, parts[0]);
 
       // Controleer of de datum geldig is
@@ -202,11 +239,43 @@ class AfvalbeheerCard extends LitElement {
   }
 
   render() {
+    console.log("Render card:", this.hass ? "Hass ready" : "No hass");
+
+    if (!this.hass) {
+      return html`<div>Loading...</div>`;
+    }
+
     const prefix = this._getEntityPrefix();
+    console.log("Gebruikte prefix:", prefix);
+
+    // Test directe sensor toegang
+    const testKeys = [
+      `sensor.${prefix}_afval_kalender_restafval`,
+      `sensor.${prefix}_afval_kalender_gft`,
+      `sensor.circulus_berkel_afval_kalender_restafval`,
+      `sensor.circulus_berkel_afval_kalender_gft`,
+    ];
+
+    testKeys.forEach((key) => {
+      console.log(
+        `Test sensor ${key}:`,
+        this.hass.states[key] ? "bestaat" : "bestaat niet"
+      );
+    });
+    // Fallback naar directe entity IDs als dynamische detectie niet werkt
+    const entityMap = {
+      restafval: "sensor.circulus_berkel_afval_kalender_restafval",
+      gft: "sensor.circulus_berkel_afval_kalender_gft",
+      papier: "sensor.circulus_berkel_afval_kalender_papier",
+      pmd: "sensor.circulus_berkel_afval_kalender_pmd",
+      vandaag: "sensor.circulus_berkel_afval_kalender_vandaag",
+      morgen: "sensor.circulus_berkel_afval_kalender_morgen",
+    };
+
     const wasteTypes = [
       {
         id: "restafval",
-        sensor: `sensor.${prefix}_afval_kalender_restafval`,
+        sensor: entityMap.restafval,
         icon: html`<svg
           viewBox="0 0 24 24"
           width="24"
@@ -221,7 +290,7 @@ class AfvalbeheerCard extends LitElement {
       },
       {
         id: "gft",
-        sensor: `sensor.${prefix}_afval_kalender_gft`,
+        sensor: entityMap.gft,
         icon: html`<svg
           viewBox="0 0 24 24"
           width="24"
@@ -234,7 +303,7 @@ class AfvalbeheerCard extends LitElement {
       },
       {
         id: "papier",
-        sensor: `sensor.${prefix}_afval_kalender_papier`,
+        sensor: entityMap.papier,
         icon: html`<svg
           viewBox="0 0 24 24"
           width="24"
@@ -249,7 +318,7 @@ class AfvalbeheerCard extends LitElement {
       },
       {
         id: "pmd",
-        sensor: `sensor.${prefix}_afval_kalender_pmd`,
+        sensor: entityMap.pmd,
         icon: html`<svg
           viewBox="0 0 24 24"
           width="24"
@@ -303,12 +372,7 @@ class AfvalbeheerCard extends LitElement {
                 d="M19,4H18V2H16V4H8V2H6V4H5C3.89,4,3,4.9,3,6V20C3,21.1,3.89,22,5,22H19C20.1,22,21,21.1,21,20V6C21,4.9,20.1,4,19,4ZM19,20H5V10H19V20ZM19,8H5V6H19V8Z"
               />
             </svg>
-            <span
-              >Vandaag:
-              ${this._getSensorValue(
-                `sensor.${prefix}_afval_kalender_vandaag`
-              )}</span
-            >
+            <span>Vandaag: ${this._getSensorValue(entityMap.vandaag)}</span>
           </div>
           <div>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -316,12 +380,7 @@ class AfvalbeheerCard extends LitElement {
                 d="M13,13H11V7H13M13,17H11V15H13M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2Z"
               />
             </svg>
-            <span
-              >Morgen:
-              ${this._getSensorValue(
-                `sensor.${prefix}_afval_kalender_morgen`
-              )}</span
-            >
+            <span>Morgen: ${this._getSensorValue(entityMap.morgen)}</span>
           </div>
         </div>
       </ha-card>
